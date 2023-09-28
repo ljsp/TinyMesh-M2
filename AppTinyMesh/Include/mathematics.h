@@ -13,6 +13,7 @@ public:
   static constexpr double Max(double, double);
   static constexpr double Min(double, double, double);
   static constexpr double Max(double, double, double);
+  static constexpr double Lerp(double, double, double);
 
   static constexpr double DegreeToRadian(double);
   static constexpr double RadianToDegree(double);
@@ -62,6 +63,11 @@ inline constexpr double Math::Max(double a, double b, double c)
 inline constexpr double Math::Min(double a, double b, double c)
 {
   return Math::Min(Math::Min(a, b), c);
+}
+
+inline constexpr double Math::Lerp(double a, double b, double t)
+{
+  return a + t * (b - a);
 }
 
 /*!
@@ -134,6 +140,7 @@ public:
   friend int operator!=(const Vector&, const Vector&);
 
   // Norm
+  friend double Dot(const Vector&, const Vector&);
   friend double Norm(const Vector&);
   friend double SquaredNorm(const Vector&);
 
@@ -378,6 +385,10 @@ the squared norm of a vector instead.
 inline double Norm(const Vector& u)
 {
   return sqrt(u.c[0] * u.c[0] + u.c[1] * u.c[1] + u.c[2] * u.c[2]);
+}
+
+inline double Dot(const Vector& u, const Vector& v) {
+    return u.c[0] * v.c[0] + u.c[1] * v.c[1] + u.c[2] * v.c[2];
 }
 
 /*!

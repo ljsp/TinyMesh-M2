@@ -50,6 +50,8 @@ set(SOURCES
         ${SRC_DIR}/ray.cpp
         ${SRC_DIR}/shader-api.cpp
         ${SRC_DIR}/triangle.cpp
+        ${SRC_DIR}/Node.cpp
+        ${SRC_DIR}/Primitives.cpp
 )
 
 set(HEADERS
@@ -64,6 +66,8 @@ set(HEADERS
         ${INC_DIR}/ray.h
         ${INC_DIR}/shader-api.h
         ${INC_DIR}/realtime.h
+        ${INC_DIR}/Node.h
+        ${INC_DIR}/Primitives.h
 )
 
 set(FORMS
