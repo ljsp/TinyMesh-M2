@@ -4,26 +4,15 @@
 
 #include "Primitives.h"
 
-void BoxImplicit::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
-
 double BoxImplicit::Value(const Vector &p) const {
     Vector q = Abs(p) - b;
     return std::max(std::max(q[0], q[1]), q[2]);
-}
-
-void Sphere::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
 }
 
 double Sphere::Value(const Vector &p) const {
     return Norm(p - center) - radius;
 }
 
-void Capsule::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
 
 double Capsule::Value(const Vector &p) const {
     Vector pa = p - a; Vector ba = b - a;
@@ -37,37 +26,21 @@ double Torus::Value(const Vector &point) const {
     return Norm(q) - this->t[1];
 }
 
-void Torus::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
-
-void Union::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
 
 double Union::Value(const Vector &p) const {
     return std::min(node1->Value(p), node2->Value(p));
 }
 
-void Intersection::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
 
 double Intersection::Value(const Vector &p) const {
     return std::max(node1->Value(p), node2->Value(p));
 }
 
-void Subtraction::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
 
 double Subtraction::Value(const Vector &p) const {
     return std::max(node1->Value(p), -node2->Value(p));
 }
 
-void SmoothUnion::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
 
 double SmoothUnion::Value(const Vector &p) const {
     double d1 = node1->Value(p);
@@ -76,9 +49,6 @@ double SmoothUnion::Value(const Vector &p) const {
     return Math::Lerp(d2, d1, h) - k * h * (1.0 - h);
 }
 
-void SmoothSubtraction::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
 
 double SmoothSubtraction::Value(const Vector &p) const {
     double d1 = node1->Value(p);
@@ -87,9 +57,6 @@ double SmoothSubtraction::Value(const Vector &p) const {
     return Math::Lerp(d2, -d1, h) + k * h * (1.0 - h);
 }
 
-void SmoothIntersection::Polygonize(int n, Mesh& g, const Box& box, const double& epsilon) const {
-    Node::Polygonize(n, g, box, epsilon);
-}
 
 double SmoothIntersection::Value(const Vector &p) const {
     double d1 = node1->Value(p);
