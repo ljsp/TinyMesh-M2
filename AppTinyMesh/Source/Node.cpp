@@ -554,4 +554,8 @@ Node::~Node() {
 
 }
 
+bool Node::Intersect(const Ray &ray, double &) const {
+    return false;
+}
+
 

@@ -32,9 +32,7 @@ public slots:
   void SphereImplicitExample();
   void CapsuleImplicitExample();
   void TorusImplicitExample();
-  void UnionImplicitExample();
-  void SubtractionImplicitExample();
-  void IntersectionImplicitExample();
+  void RenderObjects();
   void ResetCamera();
   void UpdateMaterial();
 };
