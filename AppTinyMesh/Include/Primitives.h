@@ -49,6 +49,14 @@ private:
     Vector center,t;
 };
 
+class Bunny : public Node {
+public:
+    explicit Bunny(int a) : placeholder(a) {}
+    double Value(const Vector &p) const override;
+private:
+    int placeholder;
+};
+
 class Union : public Node {
 public:
     Union(Node* n1, Node* n2) : node1(n1), node2(n2) {};
@@ -67,6 +75,7 @@ private:
     Node* node2;
 };
 
+
 class Subtraction : public Node {
 public:
     Subtraction(Node* n1, Node* n2) : node1(n1), node2(n2) {};
@@ -75,6 +84,18 @@ private:
     Node* node1;
     Node* node2;
 };
+
+
+class Melange : public Node {
+public:
+    Melange(Node* n1, Node* n2, double k) : node1(n1), node2(n2), k(k) {};
+    double Value(const Vector& p) const override;
+private:
+    Node* node1;
+    Node* node2;
+    double k;
+};
+
 
 class SmoothUnion : public Node {
 public:

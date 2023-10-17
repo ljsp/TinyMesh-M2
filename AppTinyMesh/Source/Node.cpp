@@ -554,7 +554,20 @@ Node::~Node() {
 
 }
 
-bool Node::Intersect(const Ray &ray, double &) const {
+bool Node::Intersect(const Ray &ray, double & t) const {
+    const int maxSteps = 10000;
+    const double minDist = 1e-4;
+    t = 0.0;
+    for (int i = 0; i < maxSteps; i++) {
+        Vector p = ray.Origin() + ray.Direction() * t;
+        double dist = Value(p);
+
+        if (dist < minDist) {      // We are close enough to consider this a hit
+            return true;
+        }
+
+        t += dist;
+    }
     return false;
 }
 

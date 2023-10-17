@@ -33,6 +33,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(AppTinyMesh/Source)
 include_directories(AppTinyMesh/Include)
 include_directories(AppTinyMesh/UI)
+include_directories(Libs/glm)
 
 set(SRC_DIR ../AppTinyMesh/Source)
 set(INC_DIR ../AppTinyMesh/Include)
@@ -52,6 +53,7 @@ set(SOURCES
         ${SRC_DIR}/triangle.cpp
         ${SRC_DIR}/Node.cpp
         ${SRC_DIR}/Primitives.cpp
+        ${SRC_DIR}/Bezier.cpp
 )
 
 set(HEADERS
@@ -68,6 +70,7 @@ set(HEADERS
         ${INC_DIR}/realtime.h
         ${INC_DIR}/Node.h
         ${INC_DIR}/Primitives.h
+        ${INC_DIR}/Bezier.h
 )
 
 set(FORMS

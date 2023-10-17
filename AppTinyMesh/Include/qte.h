@@ -4,6 +4,7 @@
 #include <QtWidgets/qmainwindow.h>
 #include "realtime.h"
 #include "meshcolor.h"
+#include "Node.h"
 
 QT_BEGIN_NAMESPACE
 	namespace Ui { class Assets; }
@@ -17,6 +18,8 @@ private:
 
   MeshWidget* meshWidget;   //!< Viewer
   MeshColor meshColor;		//!< Mesh.
+  Node * implicit;
+  std::vector<std::pair<Vector,Vector>> rays;
 
 public:
   MainWindow();
@@ -28,12 +31,15 @@ public slots:
   void editingSceneLeft(const Ray&);
   void editingSceneRight(const Ray&);
   void BoxMeshExample();
+  void BunnyImplicitExample();
   void BoxImplicitExample();
   void SphereImplicitExample();
   void CapsuleImplicitExample();
   void TorusImplicitExample();
   void RenderObjects();
+  void IntersectRay();
   void ResetCamera();
+  void SaveModel();
   void UpdateMaterial();
 };
 
