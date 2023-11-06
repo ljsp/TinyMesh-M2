@@ -55,6 +55,7 @@ void MainWindow::CreateActions()
     connect(uiw->capsuleImplicit, SIGNAL(clicked()), this, SLOT(CapsuleImplicitExample()));
     connect(uiw->torusImplicit, SIGNAL(clicked()), this, SLOT(TorusImplicitExample()));
     connect(uiw->bunnyImplicit, SIGNAL(clicked()), this, SLOT(BunnyImplicitExample()));
+    connect(uiw->customImplicit, SIGNAL(clicked()), this, SLOT(CustomImplicitExample()));
     connect(uiw->apply_operatorButton, SIGNAL(clicked()), this, SLOT(RenderObjects()));
     connect(uiw->addRay_Button, SIGNAL(clicked()), this, SLOT(IntersectRay()));
     connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
@@ -87,6 +88,52 @@ void MainWindow::BoxMeshExample()
 
 	meshColor = MeshColor(boxMesh, cols, boxMesh.VertexIndexes());
 	UpdateGeometry();
+}
+
+void MainWindow::CustomImplicitExample()
+{
+    Bunny bunny(1.0);
+
+    double translateX = uiw->translateX_doubleSpinBox->value();
+    double translateY = uiw->translateY_doubleSpinBox->value();
+    double translateZ = uiw->translateZ_doubleSpinBox->value();
+
+    double scaleX = uiw->scaleX_doubleSpinBox->value();
+    double scaleY = uiw->scaleY_doubleSpinBox->value();
+    double scaleZ = uiw->scaleZ_doubleSpinBox->value();
+
+    double rotateX = uiw->rotX_doubleSpinBox->value();
+    double rotateY = uiw->rotY_doubleSpinBox->value();
+    double rotateZ = uiw->rotZ_doubleSpinBox->value();
+
+    Torus torus(Vector(0.0), Vector(0.5, 0.3, 0.0));
+
+    Translate translate(&torus, Vector(translateX, translateY, translateZ));
+    Scale scaleTorus(&translate, Vector(scaleX, scaleY, scaleZ));
+    //RotationX rotationY(&rotationX, Vector(0.0, 1.0, 0.0), rotateY);
+    //RotationX rotationZ(&rotationY, Vector(0.0, 0.0, 1.0), rotateZ);
+
+    Scale scale(&bunny, Vector(1.3, 1.3, 1.3));
+
+    RotationY rotationY(&scale, rotateY);
+    RotationX rotationX(&rotationY, rotateX);
+    RotationZ implicit(&rotationX, rotateZ);
+
+    //SmoothSubtraction implicit(&rotationZ, &scaleBunny, 0.3);
+
+
+    //SmoothUnion implicit(&rotationZ, &scaleBunny, 0.3);
+
+    Mesh implicitMesh;
+    implicit.Polygonize(63, implicitMesh, Box(2.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); i++)
+        cols[i] = Color(0.8, 0.8, 0.8);
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+    UpdateGeometry();
 }
 
 void MainWindow::BunnyImplicitExample()
@@ -276,7 +323,7 @@ void MainWindow::IntersectRay()
         double sphereSize = uiw->raySphereSize_doubleSpinBox->value();
         double kVal = uiw->rayK_doubleSpinBox->value();
         auto* sphere = new Sphere(Vector(ray.Origin() + t * ray.Direction()), sphereSize);
-        implicit = new Subtraction(implicit, sphere);
+        implicit = new SmoothSubtraction(implicit, sphere, .3);
         Mesh implicitMesh;
         implicit->Polygonize(31, implicitMesh, Box(1.0));
 

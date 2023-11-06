@@ -57,6 +57,52 @@ private:
     int placeholder;
 };
 
+class Translate : public Node {
+public:
+    Translate(Node* n, const Vector& t) : node(n), t(t) {};
+    double Value(const Vector& p) const override;
+private:
+    Node* node;
+    Vector t;
+};
+
+
+class RotationX : public Node {
+public:
+    RotationX(Node* n, double a) : node(n), theta(a) {};
+    double Value(const Vector& p) const override;
+private:
+    Node* node;
+    double theta;
+};
+
+class RotationY : public Node {
+public:
+    RotationY(Node* n, double a) : node(n), theta(a) {};
+    double Value(const Vector& p) const override;
+private:
+    Node* node;
+    double theta;
+};
+
+class RotationZ : public Node {
+public:
+    RotationZ(Node* n, double a) : node(n), theta(a) {};
+    double Value(const Vector& p) const override;
+private:
+    Node* node;
+    double theta;
+};
+
+class Scale : public Node {
+public:
+    Scale(Node* n, const Vector& s) : node(n), s(s) {};
+    double Value(const Vector& p) const override;
+private:
+    Node* node;
+    Vector s;
+};
+
 class Union : public Node {
 public:
     Union(Node* n1, Node* n2) : node1(n1), node2(n2) {};

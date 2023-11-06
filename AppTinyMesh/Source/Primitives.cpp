@@ -82,6 +82,46 @@ double Bunny::Value(const Vector &p) const {
            dot(f02,glm::vec4(-.01,.06,-.02,.07))+dot(f03,glm::vec4(-.05,.07,.03,.04))-0.16;
 }
 
+double Translate::Value(const Vector &p) const {
+    return node->Value(p - t);
+}
+
+double RotationX::Value(const Vector &p) const {
+    glm::vec3 q(p[0], p[1], p[2]);
+    // Theta to radians
+    double theta_rad = glm::radians(theta);
+    glm::mat3 m = glm::mat3(1.0, 0.0, 0.0,
+                            0.0, cos(theta_rad), -sin(theta_rad),
+                            0.0, sin(theta_rad), cos(theta_rad));
+    q = m * q;
+    return node->Value(Vector(q[0], q[1], q[2]));
+}
+
+double RotationY::Value(const Vector &p) const {
+    glm::vec3 q(p[0], p[1], p[2]);
+    double theta_rad = glm::radians(theta);
+    glm::mat3 m = glm::mat3(cos(theta_rad), 0.0, sin(theta_rad),
+                            0.0, 1.0, 0.0,
+                            -sin(theta_rad), 0.0, cos(theta_rad));
+    q = m * q;
+    return node->Value(Vector(q[0], q[1], q[2]));
+}
+
+double RotationZ::Value(const Vector &p) const {
+    glm::vec3 q(p[0], p[1], p[2]);
+    double theta_rad = glm::radians(theta);
+    glm::mat3 m = glm::mat3(cos(theta_rad), -sin(theta_rad), 0.0,
+                            sin(theta_rad), cos(theta_rad), 0.0,
+                            0.0, 0.0, 1.0);
+    q = m * q;
+    return node->Value(Vector(q[0], q[1], q[2]));
+}
+
+double Scale::Value(const Vector &p) const {
+    Vector q = p;
+    q *= s.Inverse();
+    return node->Value(q);
+}
 
 double Union::Value(const Vector &p) const {
     return std::min(node1->Value(p), node2->Value(p));
