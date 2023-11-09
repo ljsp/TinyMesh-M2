@@ -1231,6 +1231,19 @@ p, li { white-space: pre-wrap; }
        <property name="title">
         <string>Bezier</string>
        </property>
+       <widget class="QPushButton" name="bezierPatch_Button">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>40</y>
+          <width>89</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Bezier Patch</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QPushButton" name="exportModel_Button">
        <property name="geometry">

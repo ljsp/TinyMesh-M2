@@ -37,6 +37,7 @@ public slots:
   void SphereImplicitExample();
   void CapsuleImplicitExample();
   void TorusImplicitExample();
+  void BezierPatchExample();
   void RenderObjects();
   void IntersectRay();
   void ResetCamera();

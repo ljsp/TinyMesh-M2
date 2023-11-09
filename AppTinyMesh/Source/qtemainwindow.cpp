@@ -1,5 +1,6 @@
 #include "qte.h"
 #include "implicits.h"
+#include "Bezier.h"
 #include "ui_interface.h"
 #include "Primitives.h"
 
@@ -58,6 +59,7 @@ void MainWindow::CreateActions()
     connect(uiw->customImplicit, SIGNAL(clicked()), this, SLOT(CustomImplicitExample()));
     connect(uiw->apply_operatorButton, SIGNAL(clicked()), this, SLOT(RenderObjects()));
     connect(uiw->addRay_Button, SIGNAL(clicked()), this, SLOT(IntersectRay()));
+    connect(uiw->bezierPatch_Button, SIGNAL(clicked()), this, SLOT(BezierPatchExample()));
     connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
     connect(uiw->exportModel_Button, SIGNAL(clicked()), this, SLOT(SaveModel()));
     connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
@@ -92,7 +94,7 @@ void MainWindow::BoxMeshExample()
 
 void MainWindow::CustomImplicitExample()
 {
-    Bunny bunny(1.0);
+    BoxImplicit bunny(Vector(0.8));
 
     double translateX = uiw->translateX_doubleSpinBox->value();
     double translateY = uiw->translateY_doubleSpinBox->value();
@@ -106,26 +108,20 @@ void MainWindow::CustomImplicitExample()
     double rotateY = uiw->rotY_doubleSpinBox->value();
     double rotateZ = uiw->rotZ_doubleSpinBox->value();
 
-    Torus torus(Vector(0.0), Vector(0.5, 0.3, 0.0));
+    Sphere torus(Vector(0.0), .1);
 
     Translate translate(&torus, Vector(translateX, translateY, translateZ));
     Scale scaleTorus(&translate, Vector(scaleX, scaleY, scaleZ));
-    //RotationX rotationY(&rotationX, Vector(0.0, 1.0, 0.0), rotateY);
-    //RotationX rotationZ(&rotationY, Vector(0.0, 0.0, 1.0), rotateZ);
 
-    Scale scale(&bunny, Vector(1.3, 1.3, 1.3));
-
-    RotationY rotationY(&scale, rotateY);
+    RotationY rotationY(&scaleTorus, rotateY);
     RotationX rotationX(&rotationY, rotateX);
-    RotationZ implicit(&rotationX, rotateZ);
+    RotationZ rotationZ(&rotationX, rotateZ);
 
-    //SmoothSubtraction implicit(&rotationZ, &scaleBunny, 0.3);
-
-
+    SmoothSubtraction implicit(&rotationZ, &bunny, 0.3);
     //SmoothUnion implicit(&rotationZ, &scaleBunny, 0.3);
 
     Mesh implicitMesh;
-    implicit.Polygonize(63, implicitMesh, Box(2.0));
+    implicit.Polygonize(31, implicitMesh, Box(2.0));
 
     std::vector<Color> cols;
     cols.resize(implicitMesh.Vertexes());
@@ -213,6 +209,21 @@ void MainWindow::TorusImplicitExample() {
         cols[i] = Color(0.8, 0.8, 0.8);
 
     meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+    UpdateGeometry();
+}
+
+void MainWindow::BezierPatchExample()
+{
+    Bezier patch(4, 4, 10, 1, 1);
+
+    Mesh patchMesh = patch.Polygonize();
+
+    std::vector<Color> cols;
+    cols.resize(patchMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); i++)
+        cols[i] = Color(double(i) / 6.0, fmod(double(i) * 39.478378, 1.0), 0.0);
+
+    meshColor = MeshColor(patchMesh, cols, patchMesh.VertexIndexes());
     UpdateGeometry();
 }
 
@@ -320,12 +331,12 @@ void MainWindow::IntersectRay()
     uiw->hit_Label->setText(QString::number(intersect));
 
     if (intersect) {
-        double sphereSize = uiw->raySphereSize_doubleSpinBox->value();
+        double sphereSize = 0.1;
         double kVal = uiw->rayK_doubleSpinBox->value();
-        auto* sphere = new Sphere(Vector(ray.Origin() + t * ray.Direction()), sphereSize);
-        implicit = new SmoothSubtraction(implicit, sphere, .3);
+        Sphere* sphere = new Sphere(Vector(ray.Origin() + t * ray.Direction()), sphereSize);
+        implicit = new SmoothSubtraction(implicit, sphere, .0);
         Mesh implicitMesh;
-        implicit->Polygonize(31, implicitMesh, Box(1.0));
+        implicit->Polygonize(31, implicitMesh, Box(2.0));
 
         std::vector<Color> cols;
         cols.resize(implicitMesh.Vertexes());

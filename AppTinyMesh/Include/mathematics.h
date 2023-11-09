@@ -143,6 +143,7 @@ public:
   friend double Dot(const Vector&, const Vector&);
   friend double Norm(const Vector&);
   friend double SquaredNorm(const Vector&);
+  friend Vector Cross(const Vector&, const Vector&);
 
   friend void Normalize(Vector&);
   friend Vector Normalized(const Vector&);
@@ -389,6 +390,10 @@ inline double Norm(const Vector& u)
 
 inline double Dot(const Vector& u, const Vector& v) {
     return u.c[0] * v.c[0] + u.c[1] * v.c[1] + u.c[2] * v.c[2];
+}
+
+inline Vector Cross(const Vector& u, const Vector& v) {
+    return Vector(u.c[1] * v.c[2] - u.c[2] * v.c[1], u.c[2] * v.c[0] - u.c[0] * v.c[2], u.c[0] * v.c[1] - u.c[1] * v.c[0]);
 }
 
 /*!
