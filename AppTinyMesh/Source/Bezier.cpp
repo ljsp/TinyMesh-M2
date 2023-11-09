@@ -6,7 +6,17 @@
 
 Bezier::Bezier(int _n, int _m, int _res, float _offsetU, float _offsetV) : n(_n), m(_m), res(_res)
 {
-    this->control_points = randomControlPoints(n, m, _offsetU, _offsetV);
+    this->control_points = randomControlPoints2D(n, m, _offsetU, _offsetV);
+}
+
+Bezier::Bezier(const std::vector<Vector> &control_points, int _n, int _m, int _res) : n(_n), m(_m), res(_res)
+{
+    this->control_points = std::vector<std::vector<Vector>>(n, std::vector<Vector>(m));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < m ; ++j) {
+            this->control_points[i][j] = control_points[i * m + j];
+        }
+    }
 }
 
 Bezier::Bezier(const std::vector<std::vector<Vector>> & _control_points, int _n, int _m, int _res) : n(_n), m(_m), res(_res)
@@ -34,18 +44,13 @@ Mesh Bezier::Polygonize() const {
             Vector p3 = evaluate(u, v2);
             Vector p4 = evaluate(u2, v2);
 
-            Vector n1 = Normalized((Cross((p2 - p1),(p3 - p1))));
-            Vector n2 = Normalized((Cross((p3 - p2),(p4 - p2))));
-            Vector n3 = Normalized((Cross((p1 - p3),(p2 - p3))));
-            Vector n4 = Normalized((Cross((p4 - p3),(p2 - p3))));
-
             vertices.push_back(p1);
             vertices.push_back(p2);
             vertices.push_back(p3);
 
-            normals.push_back(n1);
-            normals.push_back(n2);
-            normals.push_back(n3);
+            normals.push_back(p1);
+            normals.push_back(p2);
+            normals.push_back(p3);
 
             indices.push_back(vertices.size() - 3);
             indices.push_back(vertices.size() - 2);
@@ -56,9 +61,9 @@ Mesh Bezier::Polygonize() const {
             vertices.push_back(p3);
             vertices.push_back(p4);
 
-            normals.push_back(n2);
-            normals.push_back(n3);
-            normals.push_back(n4);
+            normals.push_back(p2);
+            normals.push_back(p3);
+            normals.push_back(p4);
 
             indices.push_back(vertices.size() - 3);
             indices.push_back(vertices.size() - 2);
@@ -120,7 +125,7 @@ Vector Bezier::evaluate(float u, float v) const {
     return p;
 }
 
-std::vector<std::vector<Vector>> Bezier::randomControlPoints(int n, int m, float offsetU, float offsetV) const {
+std::vector<std::vector<Vector>> Bezier::randomControlPoints2D(int n, int m, float offsetU, float offsetV) const {
     std::vector<std::vector<Vector>> points(n, std::vector<Vector>(m));
 
     // Use a seed for random number generation for reproducibility
@@ -134,7 +139,7 @@ std::vector<std::vector<Vector>> Bezier::randomControlPoints(int n, int m, float
             float z = 0;
 
             z = static_cast<float>(rand()) / RAND_MAX; // This will give you a random z between 0 and 1
-            z = z * 2 - 1; // To get a random number between -1 and 1
+            //z = z * 2 - 1; // To get a random number between -1 and 1
 
             points[i][j] = Vector(x, y, z);
         }
@@ -143,5 +148,49 @@ std::vector<std::vector<Vector>> Bezier::randomControlPoints(int n, int m, float
     return points;
 }
 
+std::vector<Vector> Bezier::randomControlPoints(int n, float offsetU, float offsetV) const {
+    return std::vector<Vector>();
+}
+
+Vector RotatePointAroundAxis(Vector point, Vector axis, float angle) {
+    return point * cos(angle) + Cross(axis, point) * sin(angle) + axis * Dot(axis, point) * (1 - cos(angle));
+}
+
+Mesh Bezier::Revolution(Mesh& curveMesh, Vector axis, int numSlices) {
+    std::vector<Vector> vertices;
+    std::vector<Vector> normals;
+    std::vector<int> indices;
+
+    axis = Normalized(axis); // Ensure the axis is normalized
+    float angleStep = (2.0f * M_PI) / numSlices;
+
+    for (int i = 0; i < curveMesh.Vertexes(); ++i) {
+        Vector curvePoint = curveMesh.Vertex(i);
+
+        for (int j = 0; j <= numSlices; ++j) {
+            float angle = j * angleStep;
+            Vector rotatedPoint = RotatePointAroundAxis(curvePoint, axis, angle);
+            vertices.push_back(rotatedPoint);
+            normals.push_back(rotatedPoint);
+        }
+    }
+
+    for (int i = 0; i < curveMesh.Vertexes() - 1; ++i) {
+        for (int j = 0; j < numSlices; ++j) {
+            int first = (i * (numSlices + 1)) + j;
+            int second = first + numSlices + 1;
+
+            indices.push_back(first);
+            indices.push_back(second);
+            indices.push_back(first + 1);
+
+            indices.push_back(second);
+            indices.push_back(second + 1);
+            indices.push_back(first + 1);
+        }
+    }
+
+    return Mesh(vertices, normals, indices, indices);
+}
 
 

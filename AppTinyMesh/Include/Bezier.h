@@ -12,14 +12,33 @@ class Bezier {
 public:
     Bezier() = default;
 
-    Bezier(int n, int m, int quality, float offsetU, float offsetV);
-    Bezier(const std::vector<std::vector<Vector>>& control_points, int n, int m, int quality);
+    static inline Bezier patch (int n, int m, int res, float offsetU, float offsetV) {
+        return {n, m, res, offsetU, offsetV};
+    }
+    static inline Bezier patch(const std::vector<std::vector<Vector>>& control_points, int n, int m, int res) {
+        return {control_points, n, m, res};
+    }
 
-    std::vector<std::vector<Vector>> randomControlPoints(int n, int m, float offsetU, float offsetV) const;
+    static inline Bezier curve(int n, int res, float offsetU, float offsetV) {
+        return {n, 1, res, offsetU, offsetV};
+    }
+
+    static inline Bezier curve(const std::vector<Vector>& control_points, int n, int res) {
+        return {control_points, n, 1, res};
+    }
+
+    std::vector<Vector> randomControlPoints(int n, float offsetU, float offsetV) const;
+    std::vector<std::vector<Vector>> randomControlPoints2D(int n, int m, float offsetU, float offsetV) const;
 
     Mesh Polygonize() const;
+    static Mesh Revolution(Mesh & curveMesh, Vector axis, int res);
 
 private:
+    Bezier(int n, int m, int res, float offsetU, float offsetV);
+    Bezier(const std::vector<Vector>& control_points, int n, int m, int res);
+    Bezier(const std::vector<std::vector<Vector>>& control_points, int n, int m, int res);
+
+
     float Bernstein(int n, int i, float u) const;
     Vector evaluate(float u, float v) const;
 

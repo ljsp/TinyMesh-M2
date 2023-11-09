@@ -60,6 +60,7 @@ void MainWindow::CreateActions()
     connect(uiw->apply_operatorButton, SIGNAL(clicked()), this, SLOT(RenderObjects()));
     connect(uiw->addRay_Button, SIGNAL(clicked()), this, SLOT(IntersectRay()));
     connect(uiw->bezierPatch_Button, SIGNAL(clicked()), this, SLOT(BezierPatchExample()));
+    connect(uiw->bezierCurve_Button, SIGNAL(clicked()), this, SLOT(BezierCurveExample()));
     connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
     connect(uiw->exportModel_Button, SIGNAL(clicked()), this, SLOT(SaveModel()));
     connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
@@ -214,7 +215,13 @@ void MainWindow::TorusImplicitExample() {
 
 void MainWindow::BezierPatchExample()
 {
-    Bezier patch(4, 4, 10, 1, 1);
+    int n = uiw->patchLenght_spinBox->value();
+    int m = uiw->patchWidth_spinBox->value();
+    int res = uiw->res_spinBox->value();
+    float offsetU = uiw->offsetU_doubleSpinBox->value();
+    float offsetV = uiw->offsetV_doubleSpinBox->value();
+
+    Bezier patch = Bezier::patch(n, m, res, offsetU, offsetV);
 
     Mesh patchMesh = patch.Polygonize();
 
@@ -224,6 +231,26 @@ void MainWindow::BezierPatchExample()
         cols[i] = Color(double(i) / 6.0, fmod(double(i) * 39.478378, 1.0), 0.0);
 
     meshColor = MeshColor(patchMesh, cols, patchMesh.VertexIndexes());
+    UpdateGeometry();
+}
+
+void MainWindow::BezierCurveExample()
+{
+    int n = uiw->curveLenght_spinBox->value();
+    int res = uiw->res_spinBox->value();
+    float offsetU = uiw->offsetU_doubleSpinBox->value();
+    float offsetV = uiw->offsetV_doubleSpinBox->value();
+
+    Bezier curve = Bezier::curve(n, 10, offsetU, offsetV);
+    Mesh curveMesh = curve.Polygonize();
+    Mesh revolutionMesh = Bezier::Revolution(curveMesh, Vector(1,0,0), res);
+
+    std::vector<Color> cols;
+    cols.resize(revolutionMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); i++)
+        cols[i] = Color(double(i) / 6.0, fmod(double(i) * 39.478378, 1.0), 0.0);
+
+    meshColor = MeshColor(revolutionMesh, cols, revolutionMesh.VertexIndexes());
     UpdateGeometry();
 }
 
