@@ -27,6 +27,9 @@ public:
         return {control_points, n, 1, res};
     }
 
+    std::vector<std::vector<Vector>> getControlPoints() const { return control_points; }
+    void setControlPoints(const std::vector<std::vector<Vector>>& control_points) { this->control_points = control_points; }
+
     std::vector<Vector> randomControlPoints(int n, float offsetU, float offsetV) const;
     std::vector<std::vector<Vector>> randomControlPoints2D(int n, int m, float offsetU, float offsetV) const;
 

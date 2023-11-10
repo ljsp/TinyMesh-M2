@@ -39,6 +39,7 @@ public slots:
   void TorusImplicitExample();
   void BezierPatchExample();
   void BezierCurveExample();
+  void TwistedBezierCurveExample();
   void RenderObjects();
   void IntersectRay();
   void ResetCamera();

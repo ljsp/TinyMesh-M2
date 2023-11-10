@@ -54,6 +54,7 @@ set(SOURCES
         ${SRC_DIR}/Node.cpp
         ${SRC_DIR}/Primitives.cpp
         ${SRC_DIR}/Bezier.cpp
+        ${SRC_DIR}/Deformation.cpp
 )
 
 set(HEADERS
@@ -71,6 +72,7 @@ set(HEADERS
         ${INC_DIR}/Node.h
         ${INC_DIR}/Primitives.h
         ${INC_DIR}/Bezier.h
+        ${INC_DIR}/Deformation.h
 )
 
 set(FORMS

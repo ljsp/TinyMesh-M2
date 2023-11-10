@@ -177,16 +177,18 @@ Mesh Bezier::Revolution(Mesh& curveMesh, Vector axis, int numSlices) {
 
     for (int i = 0; i < curveMesh.Vertexes() - 1; ++i) {
         for (int j = 0; j < numSlices; ++j) {
-            int first = (i * (numSlices + 1)) + j;
-            int second = first + numSlices + 1;
+            int i1 = i * (numSlices + 1) + j;
+            int i2 = i1 + numSlices + 1;
+            int i3 = i2 + 1;
+            int i4 = i1 + 1;
 
-            indices.push_back(first);
-            indices.push_back(second);
-            indices.push_back(first + 1);
+            indices.push_back(i1);
+            indices.push_back(i2);
+            indices.push_back(i3);
 
-            indices.push_back(second);
-            indices.push_back(second + 1);
-            indices.push_back(first + 1);
+            indices.push_back(i1);
+            indices.push_back(i3);
+            indices.push_back(i4);
         }
     }
 

@@ -1,6 +1,7 @@
 #include "qte.h"
 #include "implicits.h"
 #include "Bezier.h"
+#include "Deformation.h"
 #include "ui_interface.h"
 #include "Primitives.h"
 
@@ -61,6 +62,7 @@ void MainWindow::CreateActions()
     connect(uiw->addRay_Button, SIGNAL(clicked()), this, SLOT(IntersectRay()));
     connect(uiw->bezierPatch_Button, SIGNAL(clicked()), this, SLOT(BezierPatchExample()));
     connect(uiw->bezierCurve_Button, SIGNAL(clicked()), this, SLOT(BezierCurveExample()));
+    connect(uiw->twist_Button, SIGNAL(clicked()), this, SLOT(TwistedBezierCurveExample()));
     connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
     connect(uiw->exportModel_Button, SIGNAL(clicked()), this, SLOT(SaveModel()));
     connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
@@ -242,8 +244,83 @@ void MainWindow::BezierCurveExample()
     float offsetV = uiw->offsetV_doubleSpinBox->value();
 
     Bezier curve = Bezier::curve(n, 10, offsetU, offsetV);
+
+    /*std::vector<std::vector<Vector>> cp = curve.getControlPoints();
+    printf("cp.size() = %d\n", cp.size());
+    for (int i = 0; i < cp.size(); ++i) {
+        for (int j = 0; j < cp[i].size(); ++j) {
+            printf("{%f, %f, %f},\n", i, j, cp[i][j][0], cp[i][j][1], cp[i][j][2]);
+        }
+    }*/
+
+    std::vector<std::vector<Vector>> cp =
+            {
+                {{Vector(0.000000, 0.000000, 0.930292)}},
+                {{Vector(0.300000, 0.000000, 0.285240)}},
+                {{Vector(0.600000, 0.000000, 0.435932)}},
+                {{Vector(0.900000, 0.000000, 0.145050)}},
+                {{Vector(1.200000, 0.000000, 0.640366)}},
+                {{Vector(1.500000, 0.000000, 0.921713)}},
+                {{Vector(1.800000, 0.000000, 0.626940)}},
+                {{Vector(2.100000, 0.000000, 0.460799)}},
+                {{Vector(2.400000, 0.000000, 0.657712)}},
+                {{Vector(2.700000, 0.000000, 0.984499)}},
+            };
+
+    curve.setControlPoints(cp);
+
     Mesh curveMesh = curve.Polygonize();
+
     Mesh revolutionMesh = Bezier::Revolution(curveMesh, Vector(1,0,0), res);
+
+    std::vector<Color> cols;
+    cols.resize(revolutionMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); i++)
+        cols[i] = Color(double(i) / 6.0, fmod(double(i) * 39.478378, 1.0), 0.0);
+
+    meshColor = MeshColor(revolutionMesh, cols, revolutionMesh.VertexIndexes());
+    UpdateGeometry();
+}
+
+void MainWindow::TwistedBezierCurveExample()
+{
+    int n = uiw->curveLenght_spinBox->value();
+    int res = uiw->res_spinBox->value();
+    float offsetU = uiw->offsetU_doubleSpinBox->value();
+    float offsetV = uiw->offsetV_doubleSpinBox->value();
+
+    Bezier curve = Bezier::curve(n, 10, offsetU, offsetV);
+
+    /*std::vector<std::vector<Vector>> cp = curve.getControlPoints();
+    printf("cp.size() = %d\n", cp.size());
+    for (int i = 0; i < cp.size(); ++i) {
+        for (int j = 0; j < cp[i].size(); ++j) {
+            printf("{%f, %f, %f},\n", i, j, cp[i][j][0], cp[i][j][1], cp[i][j][2]);
+        }
+    }*/
+
+    std::vector<std::vector<Vector>> cp =
+            {
+                    {{Vector(0.000000, 0.000000, 0.930292)}},
+                    {{Vector(0.300000, 0.000000, 0.285240)}},
+                    {{Vector(0.600000, 0.000000, 0.435932)}},
+                    {{Vector(0.900000, 0.000000, 0.145050)}},
+                    {{Vector(1.200000, 0.000000, 0.640366)}},
+                    {{Vector(1.500000, 0.000000, 0.921713)}},
+                    {{Vector(1.800000, 0.000000, 0.626940)}},
+                    {{Vector(2.100000, 0.000000, 0.460799)}},
+                    {{Vector(2.400000, 0.000000, 0.657712)}},
+                    {{Vector(2.700000, 0.000000, 0.984499)}},
+            };
+
+    curve.setControlPoints(cp);
+
+    Mesh curveMesh = curve.Polygonize();
+
+    Twist twist(3.9, Vector(1,0,0));
+    Mesh warpedMesh = twist.WarpMesh(curveMesh);
+
+    Mesh revolutionMesh = Bezier::Revolution(warpedMesh, Vector(1,0,0), res);
 
     std::vector<Color> cols;
     cols.resize(revolutionMesh.Vertexes());
